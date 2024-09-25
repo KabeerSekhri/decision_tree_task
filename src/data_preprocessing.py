@@ -1,7 +1,7 @@
 import numpy as np 
 import pandas as pd 
 
-dataset = pd.read_csv("/Users/hemantsekhri/Documents/IML/fraud_train.csv")
+dataset = pd.read_csv("../data/training_data.csv")
 
 dataset.columns = dataset.columns.str.strip()  # Removes leading and trailing spaces in titles
 #dataset.isnull().sum() # Check for missing values
