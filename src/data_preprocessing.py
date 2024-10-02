@@ -12,6 +12,7 @@ dataset.drop_duplicates(inplace=True)
 
 #dataset.corr()['FUEL CONSUMPTION'] # To find correlation
 
-X = dataset[['amount','oldbalanceOrg','newbalanceOrig','oldbalanceDest','newbalanceDest']] # Features (independent)
-Y = dataset['isFraud'].values.reshape(-1, 1) # Target (dependent)
-X = np.c_[np.ones(X.shape[0]), X] # Adding a column of 1s for constant in matrix multiplication
+X = dataset[['type', 'amount','oldbalanceOrg','newbalanceOrig','oldbalanceDest','newbalanceDest']] # Features (independent)
+Y = dataset['isFraud'] # Target (dependent)
+X = pd.DataFrame(X)
+Y = pd.DataFrame(Y)
