@@ -16,10 +16,7 @@ with open('../models/decision_tree_model_final.pkl','wb') as file:
 def calculate_metrics(data, tree):
     # Classify each row using the decision tree
     data["classification"] = data.apply(classify_example, axis=1, args=(tree,))
-    data[["classification"]].to_csv('../results/train_predictions.csv', index=False)
-
-    with open('../results/train_predictions.pkl', 'wb') as file:
-        pickle.dump(data[["classification"]], file)
+    data[["classification"]].to_csv('../results/train_predictions.csv', index=False)  #Save to CSV
     
     # Create confusion matrix components
     TP = ((data["classification"] == 1) & (data["isFraud"] == 1)).sum()  # True positives
