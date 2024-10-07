@@ -60,20 +60,32 @@ def get_best_split(data, pot_splits):
 
     return best_col, best_val
 
+def classify_data(data):
+  target_col = data[:,- 1]
+  uni_class, count_uni = np.unique(target_col, return_counts=True)
+
+  index = count_uni.argmax()
+  classification = uni_class[index]
+
+  return classification
+
 def check_pure(data):
     if len(np.unique(data[data.columns[-1]]))==1:
         return True
     else:
         return False
 
-def decision_tree(data, min_samples, max_depth):
-    
-    depth = 0
-    if (check_pure(data)==True) or (len(data)<=min_samples) or (depth >= max_depth):
-        return target.unique()[0]
-    
-    else: 
-        depth +=1
+def decision_tree(data, min_samples, max_depth, depth=0):
+
+    # Check for base cases
+    if (check_pure(data) == True) or (len(data) <= min_samples) or (depth >= max_depth):
+        if type(data) == pd.DataFrame:
+          data =data.values
+        classification = classify_data(data)
+        return classification  # Get the majority class in case of a tie
+
+    else:
+        depth += 1
         # Determining the child nodes
         pot_splits = potential_splits(data)
         split_col, split_val = get_best_split(data, pot_splits)
@@ -81,37 +93,38 @@ def decision_tree(data, min_samples, max_depth):
 
         # Making the tree
         cond = f"{split_col} <= {split_val}"
-        sub_tree = {cond: []} # Tree is in form of dictionary
+        sub_tree = {cond: []}  # Tree is in the form of a dictionary
 
-        node_yes = decision_tree(left_child, min_samples,max_depth)
-        node_no = decision_tree(right_child, min_samples,max_depth)
+        # Recursively build child nodes
+        node_yes = decision_tree(left_child, min_samples, max_depth, depth)
+        node_no = decision_tree(right_child, min_samples, max_depth, depth)
 
-        sub_tree[cond].append[node_yes]
-        sub_tree[cond].append[node_no]
+        # Append children to the current node
+        sub_tree[cond].append(node_yes)
+        sub_tree[cond].append(node_no)
 
         return sub_tree
+
     
 # Classify from an example
-def classify(example,tree):
+def classify_example(example,tree):
   cond = list(tree.keys())[0]
   feature, compare, val = cond.split()
 
-  # Split condition
-  if example[feature] <= float(val):
+  if example[feature] <= float(val): # Split condition
     answer = tree[cond][0]
   else:
     answer = tree[cond][1]
 
-  # See if label reached
-  if type(answer) != dict:
+  if type(answer) != dict: # See if label reached
    return answer
   else:
-   return classify(example,answer) # Answer is the remaining part of the tree
+   return classify_example(example,answer) # Answer is the remaining part of the tree
 
 
 # Accuracy of classifictions
 def accuracy(data, tree):
-    data["classification"] = data.apply(classify, axis=1, args=(tree,)) # Classify each row using the decision tree
+    data["classification"] = data.apply(classify_example, axis=1, args=(tree,)) # Classify each row using the decision tree
     data["correctness"] = data["classification"] == data['isFraud'] # Compare classification with the actual labels
     
     accuracy_score = data["correctness"].mean() # Calculate accuracy as the mean of correctness
