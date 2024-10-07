@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd 
 
 
+# Find column indices and all potential splits at said indies
 def potential_splits(data):
     splits = {}
     n_col = data.shape[1]
@@ -12,16 +13,15 @@ def potential_splits(data):
 
 # Function to split data based on column name and value
 def split_data(data, split_col, split_val):
-    # Ensure split_col is treated as a string (column name)
     left_data = data[data[split_col] <= split_val]
     right_data = data[data[split_col] > split_val]
     
     return left_data, right_data
 
 def entropy(data): # Takes dataset instead of column
-    target_col = dataset[dataset.columns[-1]]  # Makes last column of dataset the target column
+    target_col = data[data.columns[-1]]  # Makes last column of dataset the target column
     counts = []
-    target_dict = target.value_counts().to_dict()
+    target_dict = target_col.value_counts().to_dict()
     for k,v in target_dict.items():
         counts.append(v)
     counts = np.array(counts)
@@ -42,13 +42,16 @@ def total_entropy(left_child, right_child):
     return ent_tot
 
 
+# Get best column and attribute in that column to split at
 def get_best_split(data, pot_splits):
-    best_ent = np.inf # Initialise entropy
+    best_ent = np.inf  # Initialize entropy
+    best_col = None    # Initialize best column
+    best_val = None    # Initialize best value
 
     for k in pot_splits:
         for v in pot_splits[k]:
-            left_child, right_child = split_data(data,k,v)
-            current_ent = total_entropy(left_child,right_child)
+            left_child, right_child = split_data(data, k, v)
+            current_ent = total_entropy(left_child, right_child)
 
             if current_ent < best_ent:
                 best_ent = current_ent

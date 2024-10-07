@@ -10,9 +10,11 @@ dataset.columns = dataset.columns.str.strip()  # Removes leading and trailing sp
 dataset.dropna(inplace=True)
 dataset.drop_duplicates(inplace=True)
 
+dataset = dataset[[ 'amount','oldbalanceOrg','newbalanceOrig','oldbalanceDest','newbalanceDest','isFraud']] 
+
 #dataset.corr()['FUEL CONSUMPTION'] # To find correlation
 
-X = dataset[['type', 'amount','oldbalanceOrg','newbalanceOrig','oldbalanceDest','newbalanceDest']] # Features (independent)
-Y = dataset['isFraud'] # Target (dependent)
-X = pd.DataFrame(X)
-Y = pd.DataFrame(Y)
+#X = dataset[['amount','oldbalanceOrg','newbalanceOrig','oldbalanceDest','newbalanceDest']] # Features (independent)
+#Y = dataset['isFraud'] # Target (dependent)
+#X = pd.DataFrame(X)
+#Y = pd.DataFrame(Y)
